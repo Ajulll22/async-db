@@ -36,6 +36,12 @@ class UpdateProductResponse(BaseResponseModel):
 
 
 async def update_product(id: int, data: UpdateProductRequest):
+    query = Product.select(Product.c.id).where(id == Product.c.id)
+    check_id = await database.fetch_one(query=query)
+
+    if not check_id:
+        raise HTTPException(404, detail='Product Not Found')
+
     checking = Product.select(Product.c.id).where(
         Product.c.barcode == data.barcode)
     check_barcode = await database.fetch_one(checking)
